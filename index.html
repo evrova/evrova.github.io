@@ -89,6 +89,11 @@
       border-top:1px solid var(--border);
       z-index:1000;
       backdrop-filter:saturate(150%) blur(2px);
+      opacity:0;
+      transition: opacity .4s ease;
+    }
+    body.show-footer footer{
+      opacity:1;
     }
 
     @media (max-width:420px){
@@ -251,6 +256,11 @@
     window.addEventListener('hashchange', () => {
       const id = (location.hash || '#home').replace('#','');
       showPage(id);
+    });
+    // Show footer only when scrolled to bottom
+    window.addEventListener('scroll', () => {
+      const scrolledToBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 10;
+      document.body.classList.toggle('show-footer', scrolledToBottom);
     });
   </script>
 </body>
