@@ -31,7 +31,9 @@
     header{
       background:var(--sidebar); color:white; padding:24px 16px;
       min-width:200px; display:flex; flex-direction:column; gap:16px;
-      height:100vh; position:fixed; right:0; top:0; left:auto
+      height:100vh; position:fixed; right:0; top:0; left:auto;
+      transition: transform .35s ease, opacity .35s ease;
+      will-change: transform, opacity;
     }
     .brand{font-weight:700; font-size:18px; opacity:.85}
     nav{display:flex; flex-direction:column; gap:12px}
@@ -44,12 +46,39 @@
       color:var(--link-active); background:rgba(255,255,255,.08);
       text-decoration:none;
     }
+    .collapse-toggle{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:40px; height:40px;
+      border:1px solid var(--border);
+      border-radius:8px;
+      background:transparent;
+      color:var(--link);
+      font-size:20px;
+      cursor:pointer;
+      align-self:flex-end;
+      position:fixed;
+      top:12px;
+      right:220px; /* sits just to the left of the sidebar */
+      z-index:1100;
+    }
+    .collapse-toggle:focus{ outline:2px solid var(--link-active); outline-offset:2px; }
+    /* When collapsed, move the button to the screen edge */
+    body.nav-collapsed .collapse-toggle{ right:12px }
 
     /* Main column */
-    main{max-width:860px; margin:32px 220px 64px 0; padding:0 20px 64px}
+    main{
+      max-width:860px; margin:32px 220px 64px 0; padding:0 20px 64px;
+      transition: margin .35s ease;
+      will-change: margin;
+    }
     section{margin-bottom:40px}
     h1,h2{margin-top:0}
     .hidden{display:none}
+    /* Subpage reveal animation */
+    .subpage{ opacity:0; transform:translateY(8px); transition: opacity .30s ease, transform .30s ease; }
+    .subpage.enter{ opacity:1; transform:none; }
 
     /* Footer */
     footer{
@@ -62,17 +91,33 @@
       backdrop-filter:saturate(150%) blur(2px);
     }
 
-    /* Small screens: let nav be top row */
+    @media (max-width:420px){
+      header{ min-width:160px }
+      .collapse-toggle{ right:160px }
+    }
+
+    /* Collapse the entire sidebar off-canvas and expand content */
+    body.nav-collapsed header{ transform: translateX(100%); opacity:0; }
+    body:not(.nav-collapsed) header{ opacity:1; }
+    body.nav-collapsed main{ margin:32px 0 64px 0; }
+
+    /* Small screens: keep sidebar fixed to right, menu toggle at top-right inside sidebar */
     @media (max-width:900px){
-      header{ position:static; height:auto; width:100%; min-width:0; right:auto; background:var(--sidebar) }
-      main{ margin:20px auto 64px; padding:0 16px 72px; max-width:720px }
-      nav{ flex-direction:row; flex-wrap:wrap }
+      header{ position:fixed; right:0; top:0; left:auto; height:100vh; width:auto; min-width:200px; background:var(--sidebar) }
+      main{ max-width:720px; margin:32px 220px 64px 0; padding:0 20px 72px }
+      nav{ display:flex; flex-direction:column; gap:8px; background:var(--sidebar); padding:8px 0; border-top:1px solid var(--border); }
+    }
+    @media (prefers-reduced-motion: reduce){
+      header{ transition:none }
+      main{ transition:none }
+      .subpage{ transition:none }
     }
   </style>
 </head>
 <body>
+  <button class="collapse-toggle" id="collapseToggle" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="primaryNav">☰</button>
   <header>
-    <nav aria-label="Primary">
+    <nav id="primaryNav" aria-label="Primary">
       <a href="#home" data-target="home">Home</a>
       <a href="#projects" data-target="projects">Projects</a>
       <a href="#experience" data-target="experience">Experience</a>
@@ -136,6 +181,19 @@
     const navLinks = Array.from(document.querySelectorAll('nav a[data-target]'));
     const subpages = Array.from(document.querySelectorAll('main > section.subpage'));
     const yearEl = document.getElementById('year');
+    const collapseToggle = document.getElementById('collapseToggle');
+    const bodyEl = document.body;
+
+    function setCollapsed(collapsed){
+      bodyEl.classList.toggle('nav-collapsed', !!collapsed);
+      if (collapseToggle) collapseToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    }
+    if (collapseToggle){
+      collapseToggle.addEventListener('click', () => {
+        const isCollapsed = bodyEl.classList.contains('nav-collapsed');
+        setCollapsed(!isCollapsed);
+      });
+    }
 
     function setActive(targetId){
       navLinks.forEach(a => {
@@ -146,8 +204,8 @@
     }
 
     function showPage(id){
-      // Hide all subpages, never hide the Intro (#home)
-      subpages.forEach(s => s.classList.add('hidden'));
+      // Hide all subpages and reset animation class; never hide the Intro (#home)
+      subpages.forEach(s => { s.classList.add('hidden'); s.classList.remove('enter'); });
       if (id === 'home' || !id) {
         setActive('home');
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -156,6 +214,8 @@
       const target = document.getElementById(id);
       if (target) {
         target.classList.remove('hidden');
+        // Trigger fade + slide-in animation
+        requestAnimationFrame(() => target.classList.add('enter'));
         setActive(id);
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
@@ -176,6 +236,8 @@
     yearEl.textContent = new Date().getFullYear();
     const initial = (location.hash || '#home').replace('#','');
     showPage(initial);
+    // Collapse by default on small screens
+    setCollapsed(window.matchMedia('(max-width: 900px)').matches);
 
     // On hash change (e.g., back/forward buttons)
     window.addEventListener('hashchange', () => {
