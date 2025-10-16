@@ -9,44 +9,85 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body{margin:0; font-family:Inter, system-ui, sans-serif; background:#f9fafb; color:#111827; display:flex; justify-content:flex-start}
-    header{background:#111827; color:white; padding:24px 16px; min-width:180px; display:flex; flex-direction:column; align-items:flex-start; gap:16px; height:100vh; position:fixed; right:0; top:0; left:auto}
-    nav{display:flex; flex-direction:column; gap:12px}
-    nav a{color:white; text-decoration:none; font-weight:600}
-    nav a:hover{text-decoration:underline}
-    main{max-width:860px; margin:32px 220px 32px 0; padding:0 20px 48px}
-    section{margin-bottom:40px}
-    footer{
-      position:fixed;
-      left:0; right:0; bottom:0;
-      text-align:center;
-      color:#6b7280;
-      font-size:12px;
-      padding:6px 10px;
-      background:rgba(17,24,39,.04); /* very pale bar */
-      border-top:1px solid #e5e7eb;
-      z-index:1000;
+    :root{
+      --bg:#f9fafb; --fg:#111827; --muted:#6b7280; --accent:#2563eb; --border:#e5e7eb;
+      --sidebar:#111827; --link:#ffffff; --link-active:#93c5fd; --footer:rgba(17,24,39,.04);
     }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#0b1020; --fg:#e5e7eb; --muted:#9ca3af; --accent:#60a5fa; --border:#1f2937;
+        --sidebar:#0f172a; --link:#e5e7eb; --link-active:#93c5fd; --footer:rgba(255,255,255,.06);
+      }
+    }
+
+    html{scroll-behavior:smooth}
+    body{
+      margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background:var(--bg); color:var(--fg); display:flex; justify-content:flex-start
+    }
+
+    /* Right sidebar nav */
+    header{
+      background:var(--sidebar); color:white; padding:24px 16px;
+      min-width:200px; display:flex; flex-direction:column; gap:16px;
+      height:100vh; position:fixed; right:0; top:0; left:auto
+    }
+    .brand{font-weight:700; font-size:18px; opacity:.85}
+    nav{display:flex; flex-direction:column; gap:12px}
+    nav a{
+      color:var(--link); text-decoration:none; font-weight:600;
+      padding:6px 8px; border-radius:8px; outline:0;
+    }
+    nav a:hover, nav a:focus{ text-decoration:underline }
+    nav a.active{
+      color:var(--link-active); background:rgba(255,255,255,.08);
+      text-decoration:none;
+    }
+
+    /* Main column */
+    main{max-width:860px; margin:32px 220px 64px 0; padding:0 20px 64px}
+    section{margin-bottom:40px}
     h1,h2{margin-top:0}
     .hidden{display:none}
+
+    /* Footer */
+    footer{
+      position:fixed; left:0; right:0; bottom:0;
+      text-align:center; color:var(--muted);
+      font-size:12px; padding:6px 10px;
+      background:var(--footer);
+      border-top:1px solid var(--border);
+      z-index:1000;
+      backdrop-filter:saturate(150%) blur(2px);
+    }
+
+    /* Small screens: let nav be top row */
+    @media (max-width:900px){
+      header{ position:static; height:auto; width:100%; min-width:0; right:auto; background:var(--sidebar) }
+      main{ margin:20px auto 64px; padding:0 16px 72px; max-width:720px }
+      nav{ flex-direction:row; flex-wrap:wrap }
+    }
   </style>
 </head>
 <body>
   <header>
+    <div class="brand" aria-hidden="true">Menu</div>
     <nav aria-label="Primary">
-      <a href="#home" onclick="showPage('home')">Home</a>
-      <a href="#projects" onclick="showPage('projects')">Projects</a>
-      <a href="#experience" onclick="showPage('experience')">Experience</a>
-      <a href="#teaching" onclick="showPage('teaching')">Teaching</a>
+      <a href="#home" data-target="home">Home</a>
+      <a href="#projects" data-target="projects">Projects</a>
+      <a href="#experience" data-target="experience">Experience</a>
+      <a href="#teaching" data-target="teaching">Teaching</a>
     </nav>
   </header>
 
   <main>
+    <!-- Intro always visible -->
     <section id="home">
       <h1 style="text-align:center; margin-top:8px;">Gabriela Evrova</h1>
-      <p style="text-align:justify">I am a Machine Learning Engineer and Computer Vision Engineer with 4+ years of experience in deep learning, computer vision, and digital avatars. I am passionate about enabling new forms of interaction through technology. I completed my MSc in Computer Science at ETH Zurich I have worked at Apple, Meta Reality Labs, Microsoft, and Magic Leap, with expertise in 3D reconstruction, generative models, and high-performance computing. I thrive in collaborative environments where research and engineering meet.</p>
+      <p style="text-align:justify">I am a Machine Learning and Computer Vision Engineer (MSc ETH Zürich) with 4+ years of experience in deep learning, computer vision, and digital avatars. I’m passionate about enabling new forms of interaction through technology. I have worked at Apple, Meta Reality Labs, Microsoft, and Magic Leap, with expertise in 3D reconstruction, generative models, and high‑performance computing. I thrive in collaborative environments where research and engineering meet.</p>
     </section>
 
+    <!-- Subpages (toggle below the Intro) -->
     <section id="projects" class="subpage hidden">
       <h1>Projects</h1>
       <h2>Cosmology Image Generation</h2>
@@ -77,11 +118,13 @@
 
     <section id="teaching" class="subpage hidden">
       <h1>Teaching</h1>
-      <p><strong>TechSpark Academy</strong> — Instructor & Camp Manager (2016–2018)<br>Taught Python programming, robotics, and photography at week-long camps. Led workshops with parents on computer science education.</p>
+      <p><strong>TechSpark Academy & Lyceum Alpinum Zuoz</strong> — Digital Skills Camp Manager (07/2018, 2 weeks)<br>Responsible for preparation and supervision of Python & Robotics courses. Acted as an intermediary between TechSpakAcademy and the school. Held a workshop with parents on Computer Science in early education.</p>
 
-      <p><strong>EPFL</strong> — Instructor, Internet for Girls (2015–2016)<br>Taught computing concepts to girls aged 9–12 in French, promoting computer science and supporting students with disabilities.</p>
+      <p><strong>TechSpark Academy</strong> — Instructor (2016 – 2018)<br>Taught Programming (04/2018, 06/2018) and Digital Photography (04/2016, 07/2016) at week-long camps.</p>
 
-      <p><strong>EPFL</strong> — Teaching Assistant, Information Calculus (2015)<br>Assisted Prof. Lenstra in delivering the Information Calculus Communication course.</p>
+      <p><strong>EPFL</strong> — Instructor for Internet for Girls (09/2015 - 06/2016, 1 university year)<br>Taught elementary computing concepts to girls aged 9–12 in French.</p>
+
+      <p><strong>EPFL</strong> — Teaching Assistant, Information Calculus (09/2015 - 12/2015, 4 months)<br>Assisted the weekly practice sessions.</p>
     </section>
   </main>
 
@@ -90,21 +133,55 @@
   </footer>
 
   <script>
+    const navLinks = Array.from(document.querySelectorAll('nav a[data-target]'));
+    const subpages = Array.from(document.querySelectorAll('main > section.subpage'));
+    const yearEl = document.getElementById('year');
+
+    function setActive(targetId){
+      navLinks.forEach(a => {
+        const isActive = a.dataset.target === targetId;
+        a.classList.toggle('active', isActive);
+        a.setAttribute('aria-current', isActive ? 'page' : 'false');
+      });
+    }
+
     function showPage(id){
       // Hide all subpages, never hide the Intro (#home)
-      document.querySelectorAll('main > section.subpage').forEach(s=>s.classList.add('hidden'));
-      if (id === 'home') {
+      subpages.forEach(s => s.classList.add('hidden'));
+      if (id === 'home' || !id) {
+        setActive('home');
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
       const target = document.getElementById(id);
       if (target) {
         target.classList.remove('hidden');
+        setActive(id);
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
-    document.getElementById('year').textContent = new Date().getFullYear();
-    // Intro stays visible; no default subpage
+
+    // Hook up nav clicks to maintain hash and prevent default jump
+    navLinks.forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = a.dataset.target;
+        if (id === 'home') history.replaceState(null, '', '#home');
+        else history.replaceState(null, '', '#' + id);
+        showPage(id);
+      });
+    });
+
+    // On load: set year and open section from hash if present
+    yearEl.textContent = new Date().getFullYear();
+    const initial = (location.hash || '#home').replace('#','');
+    showPage(initial);
+
+    // On hash change (e.g., back/forward buttons)
+    window.addEventListener('hashchange', () => {
+      const id = (location.hash || '#home').replace('#','');
+      showPage(id);
+    });
   </script>
 </body>
 </html>
