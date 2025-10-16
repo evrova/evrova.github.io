@@ -46,12 +46,13 @@
       color:var(--link-active); background:rgba(255,255,255,.08);
       text-decoration:none;
     }
-    /* Ensure links stay neutral gray-blue and don't turn violet/red after clicking */
+    /* Ensure links are italic and slightly darker by default, brighten on hover */
     a, a:visited, a:active{
-      color:var(--link);
+      color:#d7dee8;      /* slightly darker and clearer */
+      font-style:italic;  /* italicize all links */
     }
     a:hover, a:focus{
-      color:var(--link-active);
+      color:#e2e8f0;      /* a little brighter on hover for visibility */
       text-decoration:underline;
     }
     .collapse-toggle{
@@ -171,8 +172,18 @@
       <p><strong>ETH Zürich</strong> — Research Assistant (2018 – 2019)<br>Deep learning for microscopy, image denoising pipelines, and HPC cluster infrastructure design.</p>
 
       <h1>Education</h1>
-      <p><strong>ETH Zürich</strong> — MSc Computer Science (2017 – 2020, GPA 5.34/6)<br>Focus: ML, Computer Vision, HPC.</p>
-      <p><strong>EPFL</strong> — BSc Computer Science (2014 – 2017, GPA 4.68/6)<br>Exchange year at ETH Zürich.</p>
+
+      <p><strong>ETH Zürich, Switzerland</strong> — MSc Computer Science<br>
+      09/2017 – 12/2020 (GPA: 5.34/6)<br>
+      Focus: Machine Learning, Computer Vision, High Performance Computing.</p>
+
+      <p><strong>EPFL, Switzerland</strong> — BSc Computer Science<br>
+      09/2014 – 09/2017 (GPA: 4.68/6)<br>
+      2016/2017 Exchange student at ETH Zürich for the final year.</p>
+
+      <p><strong>EPFL, Switzerland</strong> — Cours de Mathématiques Spéciales<br>
+      09/2013 – 09/2014 (GPA: 5.11/6)<br>
+      Foundation year, prerequisite to enter the EPFL BSc program.</p>
     </section>
 
     <section id="teaching" class="subpage hidden">
